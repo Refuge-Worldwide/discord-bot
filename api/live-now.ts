@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabaseClient';
 
-const webhookURL = 'https://discord.com/api/webhooks/1103679354120192030/4qggwRl5-zebUISlmr1IX1okzZqEibejgpTWNuTkZeWE1BRARzLiOh2M3KrHwVj3M2J5'
+const webhookURL = process.env.LIVE_ON_AIR_WEBHOOK_URL;
 
 type RadioCo = {
   status: "online" | "offline";
@@ -46,8 +46,6 @@ export default async function handler(req, res) {
 
     if (prevLiveNow != liveNow) {
       const params = {
-        username: "Refuge Worldwide",
-        avatar_url: "https://refugeworldwide.com/og-thumb.jpg",
         "embeds": [{
           "title": 'Live now: ' + liveNow,
           "url": "https://refugeworldwide.com/"
