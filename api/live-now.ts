@@ -28,7 +28,7 @@ type RadioCo = {
 };
 
 
-const handler = async (req, res) => {
+export default async function handler(req, res) {
   try {
     const r = await fetch("https://public.radio.co/stations/s3699c5e49/status");
     const radioCoData: RadioCo = await r.json();
@@ -41,6 +41,8 @@ const handler = async (req, res) => {
       .eq('id', 1)
 
     const prevLiveNow = data[0].title
+
+    console.log(prevLiveNow)
 
     if (prevLiveNow != liveNow) {
       const params = {
@@ -62,19 +64,16 @@ const handler = async (req, res) => {
         .update({ title: liveNow })
         .eq('id', 1)
 
-      res.status(400).json({
-        message: 'Message posted successfully',
-      });
+      res.status(200).send("Message posted successfully")
+
     }
 
-    res.status(400).json({
-      message: 'Not a new live show',
-    });
+    res.status(200).send("Not a new live show")
 
   } catch (error) {
 
-    res.status(400).json({
-      message: error.message,
-    });
+    res.status(400);
+    res.json({ message: error.message });
+    return;
   }
 }
