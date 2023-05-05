@@ -44,11 +44,14 @@ export default async function handler(req, res) {
 
     console.log(prevLiveNow)
 
-    if (prevLiveNow != liveNow) {
+    if (prevLiveNow == liveNow) {
       const params = {
         username: "Refuge Worldwide",
         avatar_url: "",
-        content: 'Live now: ' + liveNow
+        "embeds": [{
+          "title": 'Live now: ' + liveNow,
+          "url": "https://refugeworldwide.com/"
+        }]
       }
 
       const postMessage = await fetch(webhookURL, {
@@ -65,7 +68,7 @@ export default async function handler(req, res) {
         .eq('id', 1)
 
       res.status(200).send("Message posted successfully")
-
+      return
     }
 
     res.status(200).send("Not a new live show")
