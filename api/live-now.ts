@@ -44,10 +44,10 @@ export default async function handler(req, res) {
 
     console.log(prevLiveNow)
 
-    if (prevLiveNow == liveNow) {
+    if (prevLiveNow != liveNow) {
       const params = {
         username: "Refuge Worldwide",
-        avatar_url: "",
+        avatar_url: "https://refugeworldwide.com/og-thumb.jpg",
         "embeds": [{
           "title": 'Live now: ' + liveNow,
           "url": "https://refugeworldwide.com/"
