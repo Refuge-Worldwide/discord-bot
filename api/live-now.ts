@@ -45,7 +45,7 @@ export default async function handler(req, res) {
 
     console.log(prevLiveNow)
 
-    if (prevLiveNow != liveNow) {
+    if (prevLiveNow != liveNow || liveNow != "Refuge Worldwide - Refuge Worldwide") {
       const params = {
         "embeds": [{
           "title": 'Live now: ' + liveNow,
