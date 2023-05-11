@@ -44,7 +44,7 @@ export default async function handler(req, res) {
 
     console.log(prevLiveNow)
 
-    if (prevLiveNow == liveNow) {
+    if (prevLiveNow != liveNow) {
       const params = {
         "embeds": [{
           "title": 'Live now: ' + liveNow,
