@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabaseClient';
 
 const webhookURL = process.env.LIVE_ON_AIR_WEBHOOK_URL;
+const generalChatwebhookURL = process.env.GENERAL_CHAT_WEBHOOK_URL;
 
 type RadioCo = {
   status: "online" | "offline";
@@ -56,6 +57,14 @@ export default async function handler(req, res) {
       }
 
       const postMessage = await fetch(webhookURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params),
+      })
+
+      const postMessageGeneralChat = await fetch(generalChatwebhookURL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
