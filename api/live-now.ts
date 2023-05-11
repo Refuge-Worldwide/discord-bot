@@ -30,10 +30,10 @@ type RadioCo = {
 
 export default async function handler(req, res) {
   try {
-    const r = await fetch("https://public.radio.co/stations/s3699c5e49/status");
-    const radioCoData: RadioCo = await r.json();
+    const s = await fetch("https://refugeworldwide.com/api/schedule");
+    const scheduleData = await s.json()
 
-    const liveNow = radioCoData.current_track.title
+    const liveNow = scheduleData.liveNow.title
 
     let { data, error } = await supabase
       .from('liveNow')
@@ -44,11 +44,14 @@ export default async function handler(req, res) {
 
     console.log(prevLiveNow)
 
-    if (prevLiveNow != liveNow) {
+    if (prevLiveNow == liveNow) {
       const params = {
         "embeds": [{
           "title": 'Live now: ' + liveNow,
-          "url": "https://refugeworldwide.com/"
+          "url": "https://refugeworldwide.com/",
+          "image": {
+            "url": scheduleData.liveNow.artwork
+          },
         }]
       }
 
