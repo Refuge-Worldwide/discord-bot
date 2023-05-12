@@ -64,13 +64,15 @@ export default async function handler(req, res) {
         body: JSON.stringify(params),
       })
 
-      const postMessageGeneralChat = await fetch(generalChatwebhookURL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-      })
+      if (liveNow.includes("(r)")) {
+        const postMessageGeneralChat = await fetch(generalChatwebhookURL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(params),
+        })
+      }
 
       const { error } = await supabase
         .from('liveNow')
