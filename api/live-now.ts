@@ -64,7 +64,7 @@ export default async function handler(req, res) {
         body: JSON.stringify(params),
       })
 
-      if (liveNow.includes("(r)")) {
+      if (!liveNow.includes("(r)")) {
         const postMessageGeneralChat = await fetch(generalChatwebhookURL, {
           method: 'POST',
           headers: {
