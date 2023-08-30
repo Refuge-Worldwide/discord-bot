@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabaseClient';
+import dayjs from "dayjs";
 
 const webhookURL = process.env.LIVE_ON_AIR_WEBHOOK_URL;
 const generalChatwebhookURL = process.env.GENERAL_CHAT_WEBHOOK_URL;
@@ -31,6 +32,9 @@ type RadioCo = {
 
 export default async function handler(req, res) {
   try {
+    const now = dayjs()
+    const nowMinutes = Number(now.format("mm"))
+    console.log(nowMinutes < 50 + nowMinutes)
     const s = await fetch("https://refugeworldwide.com/api/schedule");
     const scheduleData = await s.json()
 
@@ -45,7 +49,7 @@ export default async function handler(req, res) {
 
     console.log(prevLiveNow)
 
-    if (prevLiveNow != liveNow && liveNow != "Refuge Worldwide - Refuge Worldwide") {
+    if (prevLiveNow != liveNow && liveNow != "Refuge Worldwide - Refuge Worldwide" && nowMinutes < 50) {
       const params = {
         "embeds": [{
           "title": 'Live now: ' + liveNow,
@@ -64,15 +68,15 @@ export default async function handler(req, res) {
         body: JSON.stringify(params),
       })
 
-      if (!liveNow.includes("(r)")) {
-        const postMessageGeneralChat = await fetch(generalChatwebhookURL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(params),
-        })
-      }
+      // if (!liveNow.includes("(r)")) {
+      //   const postMessageGeneralChat = await fetch(generalChatwebhookURL, {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify(params),
+      //   })
+      // }
 
       const { error } = await supabase
         .from('liveNow')
@@ -86,7 +90,6 @@ export default async function handler(req, res) {
     res.status(200).send("Not a new live show")
 
   } catch (error) {
-
     res.status(400);
     res.json({ message: error.message });
     return;
