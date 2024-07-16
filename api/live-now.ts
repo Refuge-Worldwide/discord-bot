@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabaseClient';
 
 const webhookURL = process.env.LIVE_ON_AIR_WEBHOOK_URL;
-const generalChatwebhookURL = process.env.GENERAL_CHAT_WEBHOOK_URL;
+const generalChatwebhookURL: string = process.env.GENERAL_CHAT_WEBHOOK_URL as string;
 
 type RadioCo = {
   status: "online" | "offline";
@@ -32,40 +32,32 @@ type RadioCo = {
 export default async function handler(req, res) {
   try {
     const s = await fetch("https://refugeworldwide.com/api/schedule");
-    const scheduleData = await s.json()
+    const scheduleData: { liveNow: { title: string, artwork: string } } = await s.json()
 
-    const liveNow = scheduleData.liveNow.title
+    const liveNow: string = scheduleData.liveNow.title
 
     let { data, error } = await supabase
       .from('liveNow')
       .select('title')
       .eq('id', 1)
 
-    const prevLiveNow = data[0].title
+    if (data && data.length > 0) {
+      const prevLiveNow: string = data[0].title
 
-    console.log(prevLiveNow)
+      console.log('prev live: ' + prevLiveNow)
+      console.log('live: ' + liveNow)
 
-    if (prevLiveNow != liveNow && liveNow != "Refuge Worldwide - Refuge Worldwide") {
-      const params = {
-        "embeds": [{
-          "title": 'Live now: ' + liveNow,
-          "url": "https://refugeworldwide.com/",
-          "image": {
-            "url": scheduleData.liveNow.artwork
-          },
-        }]
-      }
+      if (prevLiveNow != liveNow && (liveNow != "Refuge Worldwide - Refuge Worldwide" || "Intermission - Refuge Worldwide") && !liveNow.includes("(r)") && !liveNow.includes("!OVERWRITE!")) {
+        const params = {
+          "embeds": [{
+            "title": 'Live now: ' + liveNow,
+            "url": "https://refugeworldwide.com/",
+            "image": {
+              "url": scheduleData.liveNow.artwork
+            },
+          }]
+        }
 
-      const postMessage = await fetch(webhookURL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-      })
-
-
-      if (!liveNow.includes("(r)") || !liveNow.includes("!OVERWRITE!")) {
         const postMessageGeneralChat = await fetch(generalChatwebhookURL, {
           method: 'POST',
           headers: {
@@ -73,19 +65,18 @@ export default async function handler(req, res) {
           },
           body: JSON.stringify(params),
         })
+
+        const { error } = await supabase
+          .from('liveNow')
+          .update({ title: liveNow })
+          .eq('id', 1)
+
+        res.status(200).send("Message posted successfully")
+        return
       }
 
-      const { error } = await supabase
-        .from('liveNow')
-        .update({ title: liveNow })
-        .eq('id', 1)
-
-      res.status(200).send("Message posted successfully")
-      return
+      res.status(200).send("Not a new live show")
     }
-
-    res.status(200).send("Not a new live show")
-
   } catch (error) {
 
     res.status(400);
